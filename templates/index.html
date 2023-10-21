@@ -7,6 +7,7 @@
   <!-- Tweet Submission Box -->
   <div class="mb-6">
     <form
+      id="tweetForm"
       hx-post="/tweet"
       hx-boost="true"
       hx-swap="afterbegin"
@@ -19,8 +20,14 @@
         placeholder="What's happening?"
         rows="3"
       ></textarea>
+
+      <div id="submitSpinner" class="htmx-indicator">
+        <div
+          class="border-t-2 border-blue-500 w-8 h-8 rounded-full animate-spin mx-auto"
+        ></div>
+      </div>
       <button
-        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hide-during-request"
         type="submit"
       >
         Tweet
