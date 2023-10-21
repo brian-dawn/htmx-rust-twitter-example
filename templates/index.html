@@ -28,18 +28,11 @@
     </form>
   </div>
 
-  <!-- List of Tweets -->
-  <!-- <div id="tweetList" data-page="1">
-    {% for tweet in initial_tweets %} {% include "tweet.html" %} {% endfor %}
-  </div> -->
-
   <!-- Initial lazy load -->
   <div
     hx-get="/tweet?page=0&size=10"
     hx-trigger="intersect once"
     hx-swap="afterend"
-  >
-    Load more...
-  </div>
+  ></div>
 </div>
 {% endblock %}

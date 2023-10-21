@@ -125,25 +125,13 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
+#[derive(Template)]
+#[template(path = "index.html")]
+struct IndexTemplate {}
+
 // basic handler that responds with a static string
 async fn root(State(state): State<AppState>) -> Result<Html<String>, StatusCode> {
-    #[derive(Template)]
-    #[template(path = "index.html")]
-    struct IndexTemplate<'a> {
-        initial_tweets: &'a Vec<Tweet>,
-    }
-
-    let tweets = state.tweets.write().await;
-
-    // Sort the tweets by created_at_epoch_ms
-    let mut tweets = tweets.clone();
-    tweets.sort_by(|a, b| b.created_at_epoch_ms.cmp(&a.created_at_epoch_ms));
-    // Only show the first 10 tweets.
-    tweets = tweets.into_iter().take(10).collect();
-
-    let index = IndexTemplate {
-        initial_tweets: &tweets,
-    };
+    let index = IndexTemplate {};
     let rendered = index.render().map_err(|e| {
         tracing::error!("Failed to render template: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
@@ -204,6 +192,7 @@ struct TweetTemplate<'a> {
 struct LazyTweetsTemplate<'a> {
     tweets: &'a [Tweet],
     page: usize,
+    more_tweets: bool,
 }
 
 #[derive(Deserialize)]
@@ -233,6 +222,7 @@ async fn get_lazy_tweets(
     let tweets_template = LazyTweetsTemplate {
         tweets: &tweets,
         page: query.page,
+        more_tweets: tweets.len() > query.size * query.page,
     };
     let rendered = tweets_template.render().map_err(|e| {
         tracing::error!("Failed to render template: {}", e);
