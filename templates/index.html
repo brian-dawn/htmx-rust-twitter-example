@@ -12,13 +12,13 @@
       hx-swap="outerHTML"
       hx-target="#tweetList"
       hx-on::after-request="this.reset()"
+      hx-trigger="keydown:ctrl+enter"
     >
       <textarea
         name="tweet"
         class="w-full p-2 border rounded-md"
         placeholder="What's happening?"
         rows="3"
-        hx-trigger="keydown:ctrl+enter"
       ></textarea>
       <button
         class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
