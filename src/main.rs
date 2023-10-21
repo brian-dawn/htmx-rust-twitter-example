@@ -175,7 +175,7 @@ async fn create_tweet(
     tweets.push(tweet);
 
     // Simulate network delay...
-    tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
 
     Ok(Html(rendered))
 }
@@ -229,7 +229,7 @@ async fn get_lazy_tweets(
     })?;
 
     // Simulate network delay...
-    tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
+    tokio::time::sleep(std::time::Duration::from_millis(800)).await;
 
     Ok(Html(rendered))
 }
