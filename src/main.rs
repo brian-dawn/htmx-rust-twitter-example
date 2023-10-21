@@ -1,6 +1,6 @@
 use askama::Template;
 use axum::{
-    extract::State,
+    extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse},
     routing::{get, post},
@@ -104,6 +104,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
             tweet: "I've recently taken up pottery. It's such a therapeutic hobby! 🏺#NewHobbies".to_string(),
             created_at_epoch_ms: 14,
         }
+
         ])),
     };
 
@@ -111,6 +112,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         // `GET /` goes to `root`
         .route("/", get(root))
         .route("/tweet", post(create_tweet))
+        .route("/tweet", get(get_lazy_tweets))
         .with_state(state);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
@@ -195,4 +197,47 @@ async fn create_tweet(
 #[template(path = "tweet.html")]
 struct TweetTemplate<'a> {
     tweet: &'a Tweet,
+}
+
+#[derive(Template)]
+#[template(path = "lazy_tweets.html")]
+struct LazyTweetsTemplate<'a> {
+    tweets: &'a [Tweet],
+    page: usize,
+}
+
+#[derive(Deserialize)]
+struct LazyTweetsQueryParams {
+    page: usize,
+    size: usize,
+}
+
+async fn get_lazy_tweets(
+    State(state): State<AppState>,
+    // Get query params...
+    query: Query<LazyTweetsQueryParams>,
+) -> Result<Html<String>, StatusCode> {
+    let tweets = state.tweets.read().await;
+
+    // Sort the tweets by created_at_epoch_ms
+    let mut tweets = tweets.clone();
+    tweets.sort_by(|a, b| b.created_at_epoch_ms.cmp(&a.created_at_epoch_ms));
+
+    // Only show the tweets for the current page.
+    let tweets = tweets
+        .into_iter()
+        .skip(query.page * query.size)
+        .take(query.size)
+        .collect::<Vec<_>>();
+
+    let tweets_template = LazyTweetsTemplate {
+        tweets: &tweets,
+        page: query.page,
+    };
+    let rendered = tweets_template.render().map_err(|e| {
+        tracing::error!("Failed to render template: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    Ok(Html(rendered))
 }

@@ -22,21 +22,24 @@
       <button
         class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
         type="submit"
-        hx-trigger="click"
       >
         Tweet
       </button>
     </form>
   </div>
 
-  <!-- Infinite Scroll for Tweets -->
-  <div id="tweetList" hx-get="/tweets" hx-trigger="scroll" hx-swap="afterbegin">
+  <!-- List of Tweets -->
+  <!-- <div id="tweetList" data-page="1">
     {% for tweet in initial_tweets %} {% include "tweet.html" %} {% endfor %}
-  </div>
+  </div> -->
 
-  <!-- Loading Indicator (optional) -->
-  <div id="loading" class="my-2 text-center">
-    <span class="animate-spin">🔄</span> Loading...
+  <!-- Initial lazy load -->
+  <div
+    hx-get="/tweet?page=0&size=10"
+    hx-trigger="intersect once"
+    hx-swap="afterend"
+  >
+    Load more...
   </div>
 </div>
 {% endblock %}
