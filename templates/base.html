@@ -17,6 +17,19 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
       rel="stylesheet"
     />
+    <style>
+      .htmx-indicator {
+        opacity: 0;
+        transition: opacity 500ms ease-in;
+        display: none;
+      }
+      .htmx-request .htmx-indicator {
+        display: block;
+      }
+      .htmx-request.htmx-indicator {
+        display: block;
+      }
+    </style>
   </head>
   <body class="bg-gray-200 flex items-center justify-center">
     <div

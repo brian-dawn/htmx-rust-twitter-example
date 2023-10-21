@@ -33,6 +33,13 @@
     hx-get="/tweet?page=0&size=10"
     hx-trigger="intersect once"
     hx-swap="afterend"
-  ></div>
+    hx-indicator="#spinner"
+  >
+    <div id="spinner" class="htmx-indicator">
+      <div
+        class="border-t-2 border-blue-500 w-8 h-8 rounded-full animate-spin mx-auto"
+      ></div>
+    </div>
+  </div>
 </div>
 {% endblock %}

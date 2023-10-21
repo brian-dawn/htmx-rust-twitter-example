@@ -152,7 +152,6 @@ async fn create_tweet(
 ) -> Result<Html<String>, StatusCode> {
     tracing::info!("tweet: {}", payload.tweet);
 
-    // insert the new tweet into the database
     let current_time = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?
@@ -167,9 +166,6 @@ async fn create_tweet(
         created_at_epoch_ms: current_time,
     };
 
-    // Insert into tweets...
-
-    // Respond with the new tweet list...
     let tweet_template = TweetTemplate { tweet: &tweet };
     let rendered = tweet_template.render().map_err(|e| {
         tracing::error!("Failed to render template: {}", e);
@@ -177,6 +173,9 @@ async fn create_tweet(
     })?;
 
     tweets.push(tweet);
+
+    // Simulate network delay...
+    tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
 
     Ok(Html(rendered))
 }
@@ -228,6 +227,9 @@ async fn get_lazy_tweets(
         tracing::error!("Failed to render template: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
+
+    // Simulate network delay...
+    tokio::time::sleep(std::time::Duration::from_millis(2000)).await;
 
     Ok(Html(rendered))
 }
