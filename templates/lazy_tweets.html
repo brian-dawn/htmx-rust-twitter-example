@@ -1,0 +1,21 @@
+<div>
+  <div id="tweetList" data-page="{{ page }}">
+    {% for tweet in tweets %} {% include "tweet.html" %} {% endfor %}
+  </div>
+
+  {% if more_tweets %}
+  <div
+    hx-get="/tweet?page={{ page + 1 }}&size=10"
+    hx-trigger="intersect once"
+    hx-swap="afterend"
+    hx-indicator="#spinner{{ page }}"
+  >
+    <div id="spinner{{ page }}" class="htmx-indicator">
+      <div
+        class="border-t-2 border-blue-500 w-8 h-8 rounded-full animate-spin mx-auto"
+      ></div>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
