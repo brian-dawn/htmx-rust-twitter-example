@@ -12,13 +12,15 @@
       hx-boost="true"
       hx-swap="afterbegin"
       hx-target="#tweetList"
-      hx-on::after-request="this.reset()"
+      hx-on::before-request="this.reset()"
+      x-data
     >
       <textarea
         name="tweet"
         class="w-full p-2 border rounded-md"
-        placeholder="What's happening?"
+        placeholder="What's happening? Press Shift + Enter to submit."
         rows="3"
+        @keydown.shift.enter.prevent="submitForm($refs.submitButton)"
       ></textarea>
 
       <div id="submitSpinner" class="htmx-indicator">
@@ -29,6 +31,7 @@
       <button
         class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hide-during-request"
         type="submit"
+        x-ref="submitButton"
       >
         Tweet
       </button>
@@ -49,4 +52,9 @@
     </div>
   </div>
 </div>
+<script>
+  function submitForm(buttonElement) {
+    buttonElement.click();
+  }
+</script>
 {% endblock %}

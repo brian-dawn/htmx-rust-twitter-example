@@ -3,6 +3,11 @@
     <div class="p-4 mb-4 border rounded">
       <h4 class="font-bold">Tweet #{{ tweet.id }}</h4>
       <p>{{ tweet.tweet }}</p>
+      <div>
+        <span
+          x-text="new Date({{ tweet.created_at_epoch_ms }}).toLocaleString()"
+        ></span>
+      </div>
     </div>
   </div>
 </div>
