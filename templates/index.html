@@ -9,10 +9,9 @@
     <form
       hx-post="/tweet"
       hx-boost="true"
-      hx-swap="outerHTML"
+      hx-swap="beforeend"
       hx-target="#tweetList"
       hx-on::after-request="this.reset()"
-      hx-trigger="keydown:ctrl+enter"
     >
       <textarea
         name="tweet"

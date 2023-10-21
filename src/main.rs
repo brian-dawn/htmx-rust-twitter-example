@@ -9,8 +9,9 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::{error::Error, net::SocketAddr, sync::Arc};
 use tokio::sync::RwLock;
+use tracing_subscriber::util::SubscriberInitExt;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 struct Tweet {
     id: usize,
     tweet: String,
@@ -78,21 +79,21 @@ async fn root() -> Result<Html<String>, StatusCode> {
 }
 
 #[derive(Deserialize, Serialize)]
-struct CreateTweet {
+struct CreateTweetRequest {
     tweet: String,
 }
 async fn create_tweet(
     State(state): State<AppState>,
     // this argument tells axum to parse the request body
     // as JSON into a `CreateUser` type
-    Form(payload): Form<CreateTweet>,
-) -> (StatusCode, Json<String>) {
-    tracing::debug!("tweet: {}", payload.tweet);
+    Form(payload): Form<CreateTweetRequest>,
+) -> Result<Html<String>, StatusCode> {
+    tracing::info!("tweet: {}", payload.tweet);
 
     // insert the new tweet into the database
     let current_time = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .map_err(|e| StatusCode::INTERNAL_SERVER_ERROR)?
         .as_millis();
 
     // Lock the tweets
@@ -104,12 +105,22 @@ async fn create_tweet(
         created_at_epoch_ms: current_time,
     };
 
-    let tweet_str = format!("{:?}", &tweet);
-
     // Insert into tweets...
+
+    // Respond with the new tweet list...
+    let tweet_template = TweetTemplate { tweet: &tweet };
+    let rendered = tweet_template.render().map_err(|e| {
+        tracing::error!("Failed to render template: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
     tweets.push(tweet);
 
-    // this will be converted into a JSON response
-    // with a status code of `201 Created`
-    (StatusCode::CREATED, Json(format!("{:?}", tweet_str)))
+    Ok(Html(rendered))
+}
+
+#[derive(Template)]
+#[template(path = "tweet.html")]
+struct TweetTemplate<'a> {
+    tweet: &'a Tweet,
 }
