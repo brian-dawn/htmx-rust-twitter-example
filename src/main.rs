@@ -29,16 +29,81 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 
     let state = AppState {
         tweets: Arc::new(RwLock::new(vec![
-            Tweet {
-                id: 0,
-                tweet: "hello".to_string(),
-                created_at_epoch_ms: 0,
-            },
-            Tweet {
-                id: 1,
-                tweet: "world".to_string(),
-                created_at_epoch_ms: 1,
-            },
+       Tweet {
+            id: 0,
+            tweet: "hello".to_string(),
+            created_at_epoch_ms: 0,
+        },
+        Tweet {
+            id: 1,
+            tweet: "world".to_string(),
+            created_at_epoch_ms: 1,
+        },
+        Tweet {
+            id: 2,
+            tweet: "Just had the best cup of coffee ☕️ #MorningRituals".to_string(),
+            created_at_epoch_ms: 2,
+        },
+        Tweet {
+            id: 3,
+            tweet: "Watching the sunset and reflecting on life 🌇 #DeepThoughts".to_string(),
+            created_at_epoch_ms: 3,
+        },
+        Tweet {
+            id: 4,
+            tweet: "Anyone else excited for the new season of The Crown? 📺 #BingeWatching".to_string(),
+            created_at_epoch_ms: 4,
+        },
+        Tweet {
+            id: 5,
+            tweet: "Had an amazing hike today! Nature truly heals 🌲🚶‍♂️ #NatureLover".to_string(),
+            created_at_epoch_ms: 5,
+        },
+        Tweet {
+            id: 6,
+            tweet: "Grateful for my friends and family. They've always got my back ❤️ #Blessed".to_string(),
+            created_at_epoch_ms: 6,
+        },
+        Tweet {
+            id: 7,
+            tweet: "Workout complete! 💪 Feeling stronger every day. #FitnessGoals".to_string(),
+            created_at_epoch_ms: 7,
+        },
+        Tweet {
+            id: 8,
+            tweet: "I've been reading a lot about mindfulness lately. It's truly life-changing. #MindfulLiving".to_string(),
+            created_at_epoch_ms: 8,
+        },
+        Tweet {
+            id: 9,
+            tweet: "The new album from Imagine Dragons is 🔥! #MusicLover".to_string(),
+            created_at_epoch_ms: 9,
+        },
+        Tweet {
+            id: 10,
+            tweet: "Travel plans for 2023: Japan, Greece, and Canada. Can't wait! ✈️ #Wanderlust".to_string(),
+            created_at_epoch_ms: 10,
+        },
+        Tweet {
+            id: 11,
+            tweet: "The book 'Atomic Habits' is a game changer. Highly recommend! 📚 #BookRecommendations".to_string(),
+            created_at_epoch_ms: 11,
+        },
+        Tweet {
+            id: 12,
+            tweet: "Spending some quality time with my cat 🐱. Pets truly are a source of joy. #CatLover".to_string(),
+            created_at_epoch_ms: 12,
+        },
+        Tweet {
+            id: 13,
+            tweet: "I'm considering taking a digital detox for a week. Has anyone tried it? #DigitalDetox".to_string(),
+            created_at_epoch_ms: 13,
+        },
+        Tweet {
+            id: 14,
+            tweet: "I've recently taken up pottery. It's such a therapeutic hobby! 🏺#NewHobbies".to_string(),
+            created_at_epoch_ms: 14,
+        }
         ])),
     };
 
@@ -71,6 +136,8 @@ async fn root(State(state): State<AppState>) -> Result<Html<String>, StatusCode>
     // Sort the tweets by created_at_epoch_ms
     let mut tweets = tweets.clone();
     tweets.sort_by(|a, b| b.created_at_epoch_ms.cmp(&a.created_at_epoch_ms));
+    // Only show the first 10 tweets.
+    tweets = tweets.into_iter().take(10).collect();
 
     let index = IndexTemplate {
         initial_tweets: &tweets,

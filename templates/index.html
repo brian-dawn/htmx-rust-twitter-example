@@ -31,15 +31,12 @@
 
   <!-- Infinite Scroll for Tweets -->
   <div id="tweetList" hx-get="/tweets" hx-trigger="scroll" hx-swap="afterbegin">
-      {% for tweet in initial_tweets %} {% include "tweet.html" %} {% endfor %}
+    {% for tweet in initial_tweets %} {% include "tweet.html" %} {% endfor %}
   </div>
 
-    <!-- Initial tweets can be loaded here or via another AJAX call -->
-  </div>
   <!-- Loading Indicator (optional) -->
   <div id="loading" class="my-2 text-center">
     <span class="animate-spin">🔄</span> Loading...
   </div>
 </div>
-
 {% endblock %}
