@@ -1,6 +1,43 @@
 {% extends "base.html" %} {% block title %}Index{% endblock %} {% block head %}
-<style></style>
+<style>
+  /* Custom styles if needed */
+</style>
 {% endblock %} {% block content %}
-<h1>Index</h1>
-<p>Hello, world!</p>
-{% call super() %} {% endblock %}
+<div class="container mx-auto px-4 mt-10">
+  <!-- Tweet Submission Box -->
+  <div class="mb-6">
+    <form
+      hx-post="/tweet"
+      hx-boost="true"
+      hx-swap="outerHTML"
+      hx-target="#tweetList"
+      hx-on::after-request="this.reset()"
+    >
+      <textarea
+        name="tweet"
+        class="w-full p-2 border rounded-md"
+        placeholder="What's happening?"
+        rows="3"
+        hx-trigger="keydown:ctrl+enter"
+      ></textarea>
+      <button
+        class="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        type="submit"
+        hx-trigger="click"
+      >
+        Tweet
+      </button>
+    </form>
+  </div>
+
+  <!-- Infinite Scroll for Tweets -->
+  <div id="tweetList" hx-get="/tweets" hx-trigger="scroll" hx-swap="beforeend">
+    <!-- Initial tweets can be loaded here or via another AJAX call -->
+  </div>
+  <!-- Loading Indicator (optional) -->
+  <div id="loading" class="my-2 text-center">
+    <span class="animate-spin">🔄</span> Loading...
+  </div>
+</div>
+
+{% endblock %}
