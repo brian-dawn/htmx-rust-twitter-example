@@ -9,7 +9,7 @@
     <form
       hx-post="/tweet"
       hx-boost="true"
-      hx-swap="beforeend"
+      hx-swap="afterbegin"
       hx-target="#tweetList"
       hx-on::after-request="this.reset()"
     >
@@ -30,7 +30,10 @@
   </div>
 
   <!-- Infinite Scroll for Tweets -->
-  <div id="tweetList" hx-get="/tweets" hx-trigger="scroll" hx-swap="beforeend">
+  <div id="tweetList" hx-get="/tweets" hx-trigger="scroll" hx-swap="afterbegin">
+      {% for tweet in initial_tweets %} {% include "tweet.html" %} {% endfor %}
+  </div>
+
     <!-- Initial tweets can be loaded here or via another AJAX call -->
   </div>
   <!-- Loading Indicator (optional) -->

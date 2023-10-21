@@ -11,7 +11,7 @@ use std::{error::Error, net::SocketAddr, sync::Arc};
 use tokio::sync::RwLock;
 use tracing_subscriber::util::SubscriberInitExt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Tweet {
     id: usize,
     tweet: String,
@@ -30,14 +30,14 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let state = AppState {
         tweets: Arc::new(RwLock::new(vec![
             Tweet {
-                id: 1,
+                id: 0,
                 tweet: "hello".to_string(),
                 created_at_epoch_ms: 0,
             },
             Tweet {
-                id: 2,
+                id: 1,
                 tweet: "world".to_string(),
-                created_at_epoch_ms: 0,
+                created_at_epoch_ms: 1,
             },
         ])),
     };
@@ -59,17 +59,22 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
 }
 
 // basic handler that responds with a static string
-async fn root() -> Result<Html<String>, StatusCode> {
-    #[derive(Template)] // this will generate the code...
-    #[template(path = "index.html")] // using the template in this path, relative
+async fn root(State(state): State<AppState>) -> Result<Html<String>, StatusCode> {
+    #[derive(Template)]
+    #[template(path = "index.html")]
     struct IndexTemplate<'a> {
-        // the name of the struct can be anything
-        name: &'a str, // the field name should match the variable name
-                       // in your template
+        initial_tweets: &'a Vec<Tweet>,
     }
 
-    // Generate askama template
-    let index = IndexTemplate { name: "world" };
+    let tweets = state.tweets.write().await;
+
+    // Sort the tweets by created_at_epoch_ms
+    let mut tweets = tweets.clone();
+    tweets.sort_by(|a, b| b.created_at_epoch_ms.cmp(&a.created_at_epoch_ms));
+
+    let index = IndexTemplate {
+        initial_tweets: &tweets,
+    };
     let rendered = index.render().map_err(|e| {
         tracing::error!("Failed to render template: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
