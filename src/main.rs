@@ -109,6 +109,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         ])),
     };
 
+    let num_tweets = state.tweets.read().await.len();
+
     let app = Router::new()
         // `GET /` goes to `root`
         .route("/", get(root))
@@ -124,6 +126,13 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                     body {
                         h1 { "Maud example" }
                         p { "This is an example of using Maud templates." }
+                        p { "There are currently " (num_tweets) " tweets." }
+                        // List all the tweets.
+                        ul {
+                            @for tweet in &*state.tweets.read().await {
+                                li { (tweet.tweet) }
+                            }
+                        }
                     }
                 }
             }),
