@@ -1,5 +1,3 @@
-// Define the module.
-
 use std::sync::Arc;
 
 use axum::{
@@ -12,7 +10,6 @@ use tokio::sync::RwLock;
 
 #[derive(Clone)]
 struct AppState {
-    //tweets: Arc<RwLock<Vec<Tweet>>>,
     counter: Arc<RwLock<u64>>,
 }
 
@@ -36,6 +33,8 @@ fn header() -> Markup {
             title { "Maud example" }
             // Include htmx.
             script src="https://unpkg.com/htmx.org/dist/htmx.min.js" {}
+            // Include tailwind.
+            script src="https://cdn.tailwindcss.com" {}
         }
     }
 }
@@ -46,14 +45,14 @@ async fn root() -> Markup {
         html {
             (header())
 
-            div {
+            div class="container mx-auto" {
 
-                button id="button" hx-post="/m/submit" hx-target="#counter" {
+                button id="button" hx-post="/m/submit" hx-target="#counter" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" {
                     "Submit"
 
                 }
 
-                div id="counter" {
+                div id="counter" class="text-4xl" {
                     "0"
                 }
             }
