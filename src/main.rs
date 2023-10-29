@@ -12,6 +12,8 @@ use std::{error::Error, net::SocketAddr, sync::Arc};
 use tokio::sync::RwLock;
 use tracing_subscriber::util::SubscriberInitExt;
 
+mod maud_app;
+
 #[derive(Debug, Clone)]
 struct Tweet {
     id: usize,
@@ -119,6 +121,7 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         .route(
             "/maud",
             get(html! {
+                // A maud language server would be nice...
                 html {
                     head {
                         title { "Maud example" }
@@ -133,11 +136,18 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
                                 li { (tweet.tweet) }
                             }
                         }
+
+                        // Here's a div with an explicit style.
+                        div style="font-weight: bold;" {
+                            "This text is bold!"
+                        }
                     }
                 }
             }),
         )
-        .with_state(state);
+        .with_state(state)
+        .nest("/m", maud_app::build_routes())
+        ;
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
