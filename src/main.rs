@@ -6,6 +6,7 @@ use axum::{
     routing::{get, post},
     Form, Json, Router,
 };
+use maud::{html, Markup};
 use serde::{Deserialize, Serialize};
 use std::{error::Error, net::SocketAddr, sync::Arc};
 use tokio::sync::RwLock;
@@ -113,6 +114,20 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         .route("/", get(root))
         .route("/tweet", post(create_tweet))
         .route("/tweet", get(get_lazy_tweets))
+        .route(
+            "/maud",
+            get(html! {
+                html {
+                    head {
+                        title { "Maud example" }
+                    }
+                    body {
+                        h1 { "Maud example" }
+                        p { "This is an example of using Maud templates." }
+                    }
+                }
+            }),
+        )
         .with_state(state);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
